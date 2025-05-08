@@ -105,7 +105,7 @@ export function CodeConverter() {
     <div className="space-y-6 py-8">
       <Card className="shadow-xl">
         <CardHeader>
-          <CardTitle className="text-center text-2xl text-primary-foreground">Language Selection & Action</CardTitle>
+          <CardTitle className="text-center text-2xl text-primary-foreground">Select your Programming Language For Conversion</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row items-center justify-around gap-4 p-4 rounded-lg">
@@ -219,3 +219,4 @@ export function CodeConverter() {
     </div>
   );
 }
+

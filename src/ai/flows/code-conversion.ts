@@ -29,14 +29,11 @@ export async function convertCode(input: ConvertCodeInput): Promise<ConvertCodeO
   return convertCodeFlow(input);
 }
 
-// Define the code block template separately to avoid parsing issues with nested backticks and handlebars.
-const codeBlockTemplate = `\`\`\`{{sourceLanguage}}\n{{{sourceCode}}}\n\`\`\``;
-
 const convertCodePrompt = ai.definePrompt({
   name: 'convertCodePrompt',
   input: {schema: ConvertCodeInputSchema},
   output: {schema: ConvertCodeOutputSchema},
-  prompt: `You are a code conversion expert. Convert the following code from {{sourceLanguage}} to {{targetLanguage}}.\n\n${codeBlockTemplate}\n\nProvide the converted code in the target language. Enclose the code in markdown code blocks, and do not include any other explanation or context.`,
+  prompt: `You are a code conversion expert. Convert the following code from {{sourceLanguage}} to {{targetLanguage}}.\n\n\`\`\`{{sourceLanguage}}\n{{{sourceCode}}}\n\`\`\`\n\nProvide the converted code in the target language. Enclose the code in markdown code blocks, and do not include any other explanation or context.`,
 });
 
 const convertCodeFlow = ai.defineFlow(
@@ -50,3 +47,4 @@ const convertCodeFlow = ai.defineFlow(
     return output!;
   }
 );
+

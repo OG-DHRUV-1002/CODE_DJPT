@@ -10,14 +10,40 @@ import { useToast } from '@/hooks/use-toast';
 import { programmingLanguages, type LanguageOption } from '@/lib/languages';
 import { ArrowRightLeft, Copy, Loader2, Shuffle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 export function CodeConverter() {
   const [sourceCode, setSourceCode] = useState<string>('');
   const [convertedCode, setConvertedCode] = useState<string>('');
-  const [sourceLanguage, setSourceLanguage] = useState<string>(programmingLanguages[0].value);
-  const [targetLanguage, setTargetLanguage] = useState<string>(programmingLanguages[1].value);
+  const [sourceLanguage, setSourceLanguage] = useState<string>(programmingLanguages[0]?.value || '');
+  const [targetLanguage, setTargetLanguage] = useState<string>(programmingLanguages[1]?.value || programmingLanguages[0]?.value || '');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [justConverted, setJustConverted] = useState<boolean>(false);
   const { toast } = useToast();
+
+  // Robust initial language setup
+  useEffect(() => {
+    let currentSource = sourceLanguage;
+    // Validate and set source language
+    if (!programmingLanguages.some(lang => lang.value === currentSource)) {
+      currentSource = programmingLanguages[0]?.value || '';
+      setSourceLanguage(currentSource);
+    }
+
+    let currentTarget = targetLanguage;
+    // Validate and set target language (ensuring it's different from source if possible)
+    if (!programmingLanguages.some(lang => lang.value === currentTarget) || currentTarget === currentSource) {
+      let newTarget = programmingLanguages.find(lang => lang.value !== currentSource)?.value;
+      if (!newTarget && programmingLanguages.length > 0) {
+        // Fallback if no different language is found (e.g., only one language in the list)
+        newTarget = programmingLanguages[0]?.value;
+      }
+      if (newTarget && newTarget !== targetLanguage) {
+        setTargetLanguage(newTarget);
+      }
+    }
+  }, []); // Runs once on mount
+
 
   const handleConvert = async () => {
     if (!sourceCode.trim()) {
@@ -28,7 +54,7 @@ export function CodeConverter() {
       });
       return;
     }
-    if (sourceLanguage === targetLanguage) {
+    if (sourceLanguage === targetLanguage && programmingLanguages.length > 1) {
       toast({
         title: 'Invalid Selection',
         description: 'Source and target languages must be different.',
@@ -38,7 +64,7 @@ export function CodeConverter() {
     }
 
     setIsLoading(true);
-    setConvertedCode(''); // Clear previous output
+    setConvertedCode(''); 
 
     try {
       const input: ConvertCodeInput = {
@@ -48,6 +74,8 @@ export function CodeConverter() {
       };
       const result = await convertCode(input);
       setConvertedCode(result.convertedCode);
+      setJustConverted(true);
+      setTimeout(() => setJustConverted(false), 1500); // Highlight for 1.5 seconds
       toast({
         title: 'Conversion Successful',
         description: `Code converted from ${input.sourceLanguage} to ${input.targetLanguage}.`,
@@ -84,34 +112,23 @@ export function CodeConverter() {
         const tempCode = sourceCode;
         setSourceCode(convertedCode);
         setConvertedCode(tempCode);
-    } else if (convertedCode) { // If only converted code exists, move it to source
+    } else if (convertedCode) { 
         setSourceCode(convertedCode);
         setConvertedCode('');
     }
   };
 
-  // Ensure default languages are valid on mount
-  useEffect(() => {
-    if (!programmingLanguages.find(lang => lang.value === sourceLanguage)) {
-      setSourceLanguage(programmingLanguages[0].value);
-    }
-    if (!programmingLanguages.find(lang => lang.value === targetLanguage) || targetLanguage === sourceLanguage) {
-      setTargetLanguage(programmingLanguages.find(lang => lang.value !== sourceLanguage)?.value || programmingLanguages[1].value);
-    }
-  }, []);
-
-
   return (
     <div className="space-y-6 py-8">
-      <Card className="shadow-xl">
+      <Card className="shadow-xl transition-shadow duration-300 hover:shadow-2xl">
         <CardHeader>
           <CardTitle className="text-center text-2xl text-primary-foreground">Select your Programming Language For Conversion</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col sm:flex-row items-center justify-around gap-4 p-4 rounded-lg">
-            <div className="flex-1 w-full sm:w-auto">
+          <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-4 md:gap-6 p-4 md:p-6 rounded-lg">
+            <div className="w-full md:w-2/5">
               <Label htmlFor="source-language" className="mb-2 block text-sm font-medium">From</Label>
-              <Select value={sourceLanguage} onValueChange={setSourceLanguage}>
+              <Select value={sourceLanguage} onValueChange={setSourceLanguage} disabled={isLoading}>
                 <SelectTrigger id="source-language" className="w-full">
                   <SelectValue placeholder="Source Language" />
                 </SelectTrigger>
@@ -125,11 +142,11 @@ export function CodeConverter() {
               </Select>
             </div>
 
-            <div className="flex flex-col items-center gap-2 mt-4 sm:mt-0 px-4">
+            <div className="flex flex-col items-center gap-3 my-4 md:my-0">
               <Button
                 onClick={handleConvert}
                 disabled={isLoading}
-                className="w-full sm:w-auto transition-all duration-150 ease-in-out transform hover:scale-105"
+                className="w-full sm:w-auto transition-all duration-150 ease-in-out transform hover:scale-105 px-6 py-3 text-base"
                 aria-label="Convert code"
               >
                 {isLoading ? (
@@ -151,9 +168,9 @@ export function CodeConverter() {
               </Button>
             </div>
 
-            <div className="flex-1 w-full sm:w-auto">
+            <div className="w-full md:w-2/5">
               <Label htmlFor="target-language" className="mb-2 block text-sm font-medium">To</Label>
-              <Select value={targetLanguage} onValueChange={setTargetLanguage}>
+              <Select value={targetLanguage} onValueChange={setTargetLanguage} disabled={isLoading}>
                 <SelectTrigger id="target-language" className="w-full">
                   <SelectValue placeholder="Target Language" />
                 </SelectTrigger>
@@ -170,9 +187,8 @@ export function CodeConverter() {
         </CardContent>
       </Card>
       
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="shadow-xl flex flex-col">
+        <Card className="shadow-xl flex flex-col transition-shadow duration-300 hover:shadow-2xl">
           <CardHeader>
             <CardTitle className="text-xl text-primary-foreground">Source Code</CardTitle>
           </CardHeader>
@@ -189,7 +205,10 @@ export function CodeConverter() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-xl flex flex-col">
+        <Card className={cn(
+          "shadow-xl flex flex-col transition-all duration-300 hover:shadow-2xl",
+          justConverted && "ring-2 ring-accent ring-offset-2 ring-offset-background"
+        )}>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-xl text-primary-foreground">Converted Code</CardTitle>
             <Button
@@ -219,4 +238,3 @@ export function CodeConverter() {
     </div>
   );
 }
-

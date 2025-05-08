@@ -7,7 +7,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-3 flex items-center">
         <Link href="/" className="flex items-center gap-2 text-xl font-semibold text-primary-foreground hover:text-accent-foreground transition-colors">
           <Code2 className="h-7 w-7 text-accent" />
-          Polyglot Coder
+          CODE_DJPT
         </Link>
       </div>
     </header>

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Polyglot Coder',
+  title: 'CODE_DJPT',
   description: 'Convert code between programming languages seamlessly.',
 };
 

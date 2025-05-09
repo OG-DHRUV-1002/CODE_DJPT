@@ -7,10 +7,11 @@ export function Header() {
       <div className="container mx-auto px-4 py-3 flex items-center">
         <Link
           href="/"
-          className="flex items-center gap-2 text-xl font-semibold text-primary-foreground hover:text-accent-foreground transition-colors"
+          className="flex items-center text-primary-foreground hover:text-accent-foreground transition-colors"
         >
-          <Code2 className="h-7 w-7 text-accent" />
-          CODE_DJPT - SVUD - P1
+          <Code2 className="h-8 w-8 text-accent mr-2" />
+          <span className="text-3xl font-bold tracking-tight">CODE_DJPT</span>
+          <span className="ml-2 text-sm font-light opacity-70 self-end pb-1">SVUD - P1</span>
         </Link>
       </div>
     </header>

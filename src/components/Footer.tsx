@@ -4,71 +4,35 @@
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
 import SessionTimer from './SessionTimer';
-import { sendSessionEndEmail } from '@/lib/emailService'; 
+import { useToast } from '@/hooks/use-toast'; // Keep useToast if other parts of Footer might use it, or remove if not.
 
 export interface FooterProps {
-  userEmail?: string; 
+  // userEmail?: string; // Removed userEmail
 }
 
-export const Footer: FC<FooterProps> = ({ userEmail = "dhruvhadal@gmail.com" }) => {
+export const Footer: FC<FooterProps> = () => {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [sessionExpired, setSessionExpired] = useState(false);
-  const [emailNotificationSent, setEmailNotificationSent] = useState(false);
-  const [emailError, setEmailError] = useState<string | null>(null);
+  // Removed emailNotificationSent and emailError states
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
   }, []);
 
-  const handleSessionEnd = async () => {
+  const handleSessionEnd = () => {
     setSessionExpired(true);
-    if (userEmail && !emailNotificationSent) {
-      try {
-        await sendSessionEndEmail(userEmail);
-        console.log("Session end email notification initiated for:", userEmail);
-        setEmailNotificationSent(true); 
-        setEmailError(null);
-      } catch (error) {
-        console.error("Failed to send session end email:", error);
-        setEmailNotificationSent(true); 
-        if (error instanceof Error) {
-          setEmailError(`Failed to send notification: ${error.message}`);
-        } else {
-          setEmailError("Failed to send notification due to an unknown error.");
-        }
-      }
-    } else if (!userEmail && !emailNotificationSent) {
-      console.warn("User email not provided. Cannot send session end notification.");
-    }
+    // Removed email sending logic
+    console.log("Session has ended.");
+    // You might want to show a toast here or some other UI indication
+    // For example:
+    // toast({ title: "Session Ended", description: "Your session may be inactive. Please refresh." });
   };
 
-  const sendTestEmail = async () => {
-    if (userEmail) {
-      try {
-        await sendSessionEndEmail(userEmail);
-        toast({ title: `Test email initiated to ${userEmail}.`, description: "Check console for mock details."});
-      } catch (error) {
-        toast({ title: 'Failed to send test email', description: error instanceof Error ? error.message : 'Unknown error', variant: 'destructive' });
-      }
-    } else {
-      toast({ title: 'User email not set', description: "Cannot send test email.", variant: 'destructive' });
-    }
-  };
-
-  // Helper for useToast - can be moved to a hooks directory if used elsewhere
-  const { toast } = useToast(); 
-  function useToast() {
-    // This is a simplified mock. In a real app, you'd import `useToast` from `@/hooks/use-toast`
-    // and ensure Toaster is in your layout. For this component's context, we'll fake it.
-    return {
-      toast: (options: { title: string; description?: string; variant?: "default" | "destructive" }) => {
-        console.log("Toast:", options);
-        if (typeof window !== 'undefined' && window.alert) { // Basic alert fallback for demo
-           window.alert(`${options.title}${options.description ? `\n${options.description}` : ''}`);
-        }
-      }
-    };
-  }
+  // Removed sendTestEmail function
+  
+  // Keep useToast if you plan to use toasts for other things in the footer.
+  // If not, this can be removed as well.
+  // const { toast } = useToast(); 
 
 
   return (
@@ -78,15 +42,7 @@ export const Footer: FC<FooterProps> = ({ userEmail = "dhruvhadal@gmail.com" }) 
           All Rights Reserved for CODE_DJPT by Dhruv © {currentYear}
         </div>
         
-        { process.env.NODE_ENV === 'development' && userEmail && (
-          <button 
-            onClick={sendTestEmail} 
-            className="text-xs underline px-2 py-1 my-1 md:my-0 bg-secondary hover:bg-accent text-secondary-foreground hover:text-accent-foreground rounded"
-            aria-label="Send a test email for session end notification"
-          >
-            Send Test Email
-          </button>
-        )}
+        {/* Removed Test Email Button */}
         
         <div className="text-center md:text-right">
           <SessionTimer onSessionEnd={handleSessionEnd} />
@@ -95,15 +51,7 @@ export const Footer: FC<FooterProps> = ({ userEmail = "dhruvhadal@gmail.com" }) 
               <p className="text-destructive">
                 Session has ended. Please refresh if you experience issues.
               </p>
-              {userEmail && emailNotificationSent && !emailError && (
-                <p className="text-green-600 dark:text-green-400">Notification email process initiated for {userEmail}.</p>
-              )}
-              {emailError && (
-                <p className="text-destructive">{emailError}</p>
-              )}
-              {!userEmail && sessionExpired && (
-                 <p className="text-amber-600 dark:text-amber-400">User email not available for notification.</p>
-              )}
+              {/* Removed email notification status messages */}
             </div>
           )}
         </div>
@@ -111,3 +59,4 @@ export const Footer: FC<FooterProps> = ({ userEmail = "dhruvhadal@gmail.com" }) 
     </footer>
   );
 }
+

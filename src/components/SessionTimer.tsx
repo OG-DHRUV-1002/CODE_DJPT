@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { FC } from 'react';
@@ -10,9 +11,10 @@ interface SessionTimerProps {
   expiryMessage?: string;
   // Message to display while timer is active
   activeMessagePrefix?: string;
+  onSessionEnd?: () => void;
 }
 
-const DEFAULT_DURATION_SECONDS = 6 * 60 * 60; // 6 hours
+const DEFAULT_DURATION_SECONDS = 8 * 60 * 60; // 8 hours
 const DEFAULT_EXPIRY_MESSAGE = "Session may be inactive. Consider refreshing if issues occur.";
 const DEFAULT_ACTIVE_MESSAGE_PREFIX = "Time until potential session refresh: ";
 
@@ -27,6 +29,7 @@ export const SessionTimer: FC<SessionTimerProps> = ({
   initialDurationInSeconds = DEFAULT_DURATION_SECONDS,
   expiryMessage = DEFAULT_EXPIRY_MESSAGE,
   activeMessagePrefix = DEFAULT_ACTIVE_MESSAGE_PREFIX,
+  onSessionEnd,
 }) => {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isClient, setIsClient] = useState(false);
@@ -38,7 +41,15 @@ export const SessionTimer: FC<SessionTimerProps> = ({
   }, [initialDurationInSeconds]);
 
   useEffect(() => {
-    if (!isClient || timeLeft === null || timeLeft <= 0) {
+    if (!isClient || timeLeft === null) { // Removed timeLeft <=0 check here to ensure onSessionEnd is called once
+      return;
+    }
+
+    if (timeLeft <= 0) {
+      if (onSessionEnd) {
+        onSessionEnd();
+      }
+      // No need to clear interval here as it's cleared when timeLeft becomes 0 or component unmounts
       return;
     }
 
@@ -47,7 +58,7 @@ export const SessionTimer: FC<SessionTimerProps> = ({
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [timeLeft, isClient]);
+  }, [timeLeft, isClient, onSessionEnd]);
 
   if (!isClient || timeLeft === null) {
     // Render nothing or a placeholder on the server/initial client render before timeLeft is set

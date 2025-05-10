@@ -1,13 +1,12 @@
-
 "use client";
 
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
 import SessionTimer from './SessionTimer';
-import { useToast } from '@/hooks/use-toast'; // Keep useToast if other parts of Footer might use it, or remove if not.
+// Removed emailService import as email functionality was dropped.
 
 export interface FooterProps {
-  // userEmail?: string; // Removed userEmail
+  // userEmail?: string; // Removed as per previous request
 }
 
 export const Footer: FC<FooterProps> = () => {
@@ -21,20 +20,11 @@ export const Footer: FC<FooterProps> = () => {
 
   const handleSessionEnd = () => {
     setSessionExpired(true);
-    // Removed email sending logic
-    console.log("Session has ended.");
-    // You might want to show a toast here or some other UI indication
-    // For example:
-    // toast({ title: "Session Ended", description: "Your session may be inactive. Please refresh." });
+    // No email sending logic as it was removed
+    console.log("Session has ended. User should refresh if experiencing issues.");
+    // Optionally, show a toast or other UI indication if desired
   };
-
-  // Removed sendTestEmail function
   
-  // Keep useToast if you plan to use toasts for other things in the footer.
-  // If not, this can be removed as well.
-  // const { toast } = useToast(); 
-
-
   return (
     <footer className="bg-card border-t border-border mt-auto">
       <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center text-muted-foreground text-sm space-y-2 md:space-y-0">
@@ -45,13 +35,15 @@ export const Footer: FC<FooterProps> = () => {
         {/* Removed Test Email Button */}
         
         <div className="text-center md:text-right">
-          <SessionTimer onSessionEnd={handleSessionEnd} />
+          <SessionTimer 
+            initialDurationInSeconds={6 * 60 * 60} // 6 hours
+            onSessionEnd={handleSessionEnd} 
+          />
           {sessionExpired && (
             <div className="mt-1 text-xs">
               <p className="text-destructive">
                 Session has ended. Please refresh if you experience issues.
               </p>
-              {/* Removed email notification status messages */}
             </div>
           )}
         </div>
@@ -59,4 +51,3 @@ export const Footer: FC<FooterProps> = () => {
     </footer>
   );
 }
-

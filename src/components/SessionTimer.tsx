@@ -1,76 +1,54 @@
-
-"use client";
+// "use client";
 
 import type { FC } from 'react';
 import { useState, useEffect } from 'react';
 
-interface SessionTimerProps {
-  // Duration in seconds for the countdown
-  initialDurationInSeconds?: number;
-  // Message to display when the timer expires
-  expiryMessage?: string;
-  // Message to display while timer is active
-  activeMessagePrefix?: string;
-  onSessionEnd?: () => void;
-}
-
 const DEFAULT_DURATION_SECONDS = 8 * 60 * 60; // 8 hours
-const DEFAULT_EXPIRY_MESSAGE = "Session may be inactive. Consider refreshing if issues occur.";
-const DEFAULT_ACTIVE_MESSAGE_PREFIX = "Time until potential session refresh: ";
 
-const formatTime = (totalSeconds: number): string => {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-};
+export interface SessionTimerProps {
+  initialDurationInSeconds?: number;
+  onSessionEnd?: () => void;
+  className?: string;
+}
 
 export const SessionTimer: FC<SessionTimerProps> = ({
   initialDurationInSeconds = DEFAULT_DURATION_SECONDS,
-  expiryMessage = DEFAULT_EXPIRY_MESSAGE,
-  activeMessagePrefix = DEFAULT_ACTIVE_MESSAGE_PREFIX,
   onSessionEnd,
+  className,
 }) => {
-  const [timeLeft, setTimeLeft] = useState<number | null>(null);
-  const [isClient, setIsClient] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(initialDurationInSeconds);
 
   useEffect(() => {
-    // Ensure this runs only on the client to avoid hydration issues
-    setIsClient(true);
-    setTimeLeft(initialDurationInSeconds);
-  }, [initialDurationInSeconds]);
-
-  useEffect(() => {
-    if (!isClient || timeLeft === null) { // Removed timeLeft <=0 check here to ensure onSessionEnd is called once
-      return;
-    }
-
     if (timeLeft <= 0) {
       if (onSessionEnd) {
         onSessionEnd();
       }
-      // No need to clear interval here as it's cleared when timeLeft becomes 0 or component unmounts
       return;
     }
 
-    const intervalId = setInterval(() => {
-      setTimeLeft((prevTime) => (prevTime !== null && prevTime > 0 ? prevTime - 1 : 0));
+    const timerId = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
     }, 1000);
 
-    return () => clearInterval(intervalId);
-  }, [timeLeft, isClient, onSessionEnd]);
+    return () => clearInterval(timerId);
+  }, [timeLeft, onSessionEnd]);
 
-  if (!isClient || timeLeft === null) {
-    // Render nothing or a placeholder on the server/initial client render before timeLeft is set
-    return null; 
-  }
+  const formatTime = (seconds: number): string => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return [h, m, s]
+      .map((v) => (v < 10 ? '0' + v : v))
+      .filter((v, i) => v !== '00' || i > 0 || (h === 0 && m === 0 && s === 0) ) // ensure 00:00:00 is shown
+      .join(':');
+  };
 
   return (
-    <div className="text-xs text-muted-foreground">
+    <div className={className}>
       {timeLeft > 0 ? (
-        <span>{activeMessagePrefix}{formatTime(timeLeft)}</span>
+        <span>Time until potential session refresh: {formatTime(timeLeft)}</span>
       ) : (
-        <span>{expiryMessage}</span>
+        <span>Session may be inactive. Consider refreshing.</span>
       )}
     </div>
   );

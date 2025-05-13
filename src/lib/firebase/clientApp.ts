@@ -4,17 +4,17 @@ import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 // import { getAnalytics } from "firebase/analytics"; // Uncomment if you need Analytics
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID, // Optional
+  apiKey: "AIzaSyCe5eyVaid_-a0yCrP-X5CLCk5FCg-MbOw",
+  authDomain: "polyglot-coder-gwe5d.firebaseapp.com",
+  projectId: "polyglot-coder-gwe5d",
+  storageBucket: "polyglot-coder-gwe5d.appspot.com", // Corrected from firebasestorage.app to appspot.com
+  messagingSenderId: "456251714263",
+  appId: "1:456251714263:web:9cdb4b6e484a1ed4539e92"
 };
 
 // Initialize Firebase
@@ -36,9 +36,7 @@ firestore = getFirestore(app);
 export { app, auth, firestore };
 
 // Instructions for the user:
-// 1. Go to your Firebase project settings in the Firebase console.
-// 2. Under the "General" tab, find your project's "Web app" configuration.
-// 3. Copy the apiKey, authDomain, projectId, storageBucket, messagingSenderId, and appId.
-// 4. Paste these values into your .env file (or .env.local) for the corresponding NEXT_PUBLIC_FIREBASE_... variables.
-// 5. If you want to use Firebase Analytics, also copy the measurementId and uncomment the related lines in this file.
-// 6. You can now import 'app', 'auth', or 'firestore' from '@/lib/firebase/clientApp' in your client-side components.
+// 1. The Firebase configuration has been updated with the values you provided.
+// 2. You can now import 'app', 'auth', or 'firestore' from '@/lib/firebase/clientApp' in your client-side components.
+// 3. Remember to set up Firebase Hosting and Firebase Functions for deployment as discussed previously.
+// 4. Ensure environment variables like NEXT_PUBLIC_CONVERT_CODE_URL are correctly set for your deployed environment.

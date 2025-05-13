@@ -11,7 +11,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "export": "next export"
+    "export": "next export",
+    "deploy": "npm run build && npm run export && firebase deploy"
   },
   "dependencies": {
     "@genkit-ai/googleai": "^1.6.2",
@@ -69,4 +70,3 @@
     "typescript": "^5"
   }
 }
-

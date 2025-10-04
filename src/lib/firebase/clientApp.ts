@@ -9,7 +9,7 @@ import { getFirestore, type Firestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCe5eyVaid_-a0yCrP-X5CLCk5FCg-MbOw",
+  apiKey: "AIzaSyCRg3EdmVW2iGp12M37RsgZMqxMkSMhs2c",
   authDomain: "polyglot-coder-gwe5d.firebaseapp.com",
   projectId: "polyglot-coder-gwe5d",
   storageBucket: "polyglot-coder-gwe5d.appspot.com", // Corrected from firebasestorage.app to appspot.com
